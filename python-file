@@ -1,0 +1,40 @@
+import pandas as pd 
+import re
+import datetime
+import numpy as np
+
+sheet_id ="1SOMjX7DSB_hATE-WXa3aZRAe74JxE7bZIelZF66l2Ns"
+sheet_id2 = "1dUcMj6IEJGy25WlhjkGiZF24OM5i7MbfHswOnay46vE"
+sheet_id3 = "16m87PlnOoGmK87jgLM016EF1GVMrw-m1gf-qIDNKjlE"
+
+df = pd.read_csv(f"https://docs.google.com/spreadsheets/d/{sheet_id3}/export?format=csv")
+print(df.head())
+
+name = df["Nama Bisnis"]
+#df['No HP'] = df['No HP'].astype('Int64')
+df['Kloter'] = df['Kloter'].astype('Int64')
+name.replace('&','n',regex=True, inplace=True)
+name.replace(',',' ',regex=True, inplace=True)
+name.replace('"',' ',regex=True, inplace=True)
+
+kodeBC = input("Masukan kode BC: ")
+month = datetime.datetime.now().strftime("%m")
+currdate = datetime.datetime.now().strftime("%d")
+
+tanggalBC = input("Masukan tanggal BroadCast: ")
+kloter = int(input("Masukan kloter: "))
+
+for i in range(1,11):
+    if kloter == 1:
+        df_filter = df.loc[((df['No BC'] == 'BC-'+str(i)) & (df['Tgl'] == tanggalBC))]
+        df_needed = df_filter[['Nama Bisnis', 'No HP']]
+        df_needed.to_csv('BC'+str(i)+'-'+kodeBC+'-'+str(len(df_filter.index))+'-'+currdate+'-'+month+'.txt', sep=',', index=False, header=False)        
+    else:
+        df_kloter = df.loc[((df['Kloter'] == kloter) & (df['No BC'] == 'BC-'+str(i)) & (df['Tgl'] == tanggalBC))]
+        df_needed_k = df_kloter[['Nama Bisnis', 'No HP']]
+        df_needed_k.to_csv('BC'+str(i)+'-'+kodeBC+'-'+str(len(df_kloter.index))+'-'+currdate+'-'+month+'-part-'+str(kloter)+'.txt', sep=',', index=False, header=False)
+
+print(df['Kloter'])
+print(df['No HP'])
+print("Extract data selesai :)")
+
